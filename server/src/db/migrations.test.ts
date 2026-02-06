@@ -104,3 +104,35 @@ describe('003_create_matches migration', () => {
     expect(sql).toContain('played_at');
   });
 });
+
+describe('004_create_match_rounds migration', () => {
+  const filePath = resolve(MIGRATIONS_DIR, '004_create_match_rounds.sql');
+
+  it('migration file exists', () => {
+    expect(existsSync(filePath)).toBe(true);
+  });
+
+  it('creates match_rounds table with required columns', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('create table');
+    expect(sql).toContain('match_rounds');
+    expect(sql).toContain('match_id');
+    expect(sql).toContain('question_id');
+    expect(sql).toContain('round_number');
+    expect(sql).toContain('winner_id');
+    expect(sql).toContain('answer_time_ms');
+  });
+
+  it('has foreign keys to matches, questions, and players', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('references matches');
+    expect(sql).toContain('references questions');
+    expect(sql).toContain('references players');
+  });
+
+  it('has composite index on (match_id, round_number)', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('create index');
+    expect(sql).toMatch(/match_id.*round_number/);
+  });
+});
