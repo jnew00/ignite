@@ -72,3 +72,35 @@ describe('002_create_questions migration', () => {
     expect(sql).toContain('category');
   });
 });
+
+describe('003_create_matches migration', () => {
+  const filePath = resolve(MIGRATIONS_DIR, '003_create_matches.sql');
+
+  it('migration file exists', () => {
+    expect(existsSync(filePath)).toBe(true);
+  });
+
+  it('creates matches table with required columns', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('create table');
+    expect(sql).toContain('matches');
+    expect(sql).toContain('player_1_id');
+    expect(sql).toContain('player_2_id');
+    expect(sql).toContain('winner_id');
+    expect(sql).toContain('player_1_score');
+    expect(sql).toContain('player_2_score');
+    expect(sql).toContain('elo_delta');
+    expect(sql).toContain('played_at');
+  });
+
+  it('has foreign keys to players', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('references players');
+  });
+
+  it('has index on played_at', () => {
+    const sql = readFileSync(filePath, 'utf-8').toLowerCase();
+    expect(sql).toContain('create index');
+    expect(sql).toContain('played_at');
+  });
+});
